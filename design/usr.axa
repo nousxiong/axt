@@ -1,0 +1,73 @@
+//
+// Copyright (c) 2016 Nous Xiong (348944179 at qq dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// See https://github.com/nousxiong/actorx for latest version.
+//
+// actorx插件 ActorX Addon，简称axa;
+// 
+
+//
+global cpp actor_id = actorx.adl.actor_id : actorx.actor.actor_id.adl.h;
+global java actor_id = actorx.adl.actor_id;
+global cpp actor_exit = actorx.adl.actor_exit : actorx.actor.actor_exit.adl.h;
+global java actor_exit = actorx.adl.actor_exit
+
+//
+local cpp socket = asio.ip.tcp.socket : asio.hpp;
+local cpp error_code = std.error_code : system_error;
+
+local java socket = java.nio.channels.AsynchronousSocketChannel;
+local java InetSocketAddress = java.net.InetSocketAddress;
+local java AbstractAioSession = actorx.net.AbstractAioSession;
+local java ConnectOptions = actorx.net.ConnectOptions;
+local java Throwable = java.lang.Throwable;
+local java IOException = java.io.IOException;
+
+
+//
+async java aio_service
+{
+  void connect(InetSocketAddress isaddr, AbstractAioSession aas) 
+    throws 
+      IOException 
+    messages 
+      OPEN(AbstractAioSession aas), 
+      CONN_ERR(Throwable exc, AbstractAioSession aas);
+
+  void connect(ConnectOptions opt, AbstractAioSession aas) 
+    throws 
+      IOException 
+    messages 
+      OPEN(AbstractAioSession aas), 
+      CONN_ERR(Throwable exc, AbstractAioSession aas);
+}
+
+//
+async net_service
+{
+  java void connect(InetSocketAddress isaddr, AbstractAioSession aas) 
+    throws 
+      IOException 
+    messages 
+      OPEN(AbstractAioSession aas), 
+      CONN_ERR(Throwable exc, AbstractAioSession aas);
+
+  cpp void connect(string host, string port) noexcept 
+    messages
+      OPEN(socket skt), 
+      CONN_ERR(error_code ec);
+}
+
+// 使用背景fiber的插件
+fib echo_service
+  filters
+    EXCEPT(string what)
+{
+  void echo(string e)  
+    messages
+      ECHO(string e), 
+      ECHO_ERR(int32 errcode, string errmsg);
+}
