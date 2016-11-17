@@ -10,13 +10,13 @@
 // 
 
 // 导入的全局数据结构
-global cpp actor_id = actorx.adl.actor_id : actorx.actor.actor_id.adl.h;
-global java actor_id = actorx.adl.actor_id;
-global cpp actor_exit = actorx.adl.actor_exit : actorx.actor.actor_exit.adl.h;
-global java actor_exit = actorx.adl.actor_exit;
+global cpp actor_id = actorx::adl::actor_id <actorx/actor/actor_id.adl.h>;
+global java actor_id = actorx.adl.ActorId;
+global cpp actor_exit = actorx::adl::actor_exit <actorx/actor/actor_exit.adl.h>;
+global java actor_exit = actorx.adl.ActorExit;
 
 // 
-local cpp socket = asio.ip.tcp.socket : asio.hpp;
+local cpp socket = asio.ip.tcp.socket : <asio.hpp>;
 local java socket = java.nio.channels.AsynchronousSocketChannel;
 
 

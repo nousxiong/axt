@@ -10,14 +10,14 @@
 // 
 
 //
-global cpp actor_id = actorx.adl.actor_id : actorx.actor.actor_id.adl.h;
-global java actor_id = actorx.adl.actor_id;
-global cpp actor_exit = actorx.adl.actor_exit : actorx.actor.actor_exit.adl.h;
-global java actor_exit = actorx.adl.actor_exit
+global cpp actor_id = actorx::adl::actor_id <actorx/actor/actor_id.adl.h>;
+global java actor_id = actorx.adl.ActorId;
+global cpp actor_exit = actorx::adl::actor_exit <actorx/actor/actor_exit.adl.h>;
+global java actor_exit = actorx.adl.ActorExit;
 
 //
-local cpp socket = asio.ip.tcp.socket : asio.hpp;
-local cpp error_code = std.error_code : system_error;
+local cpp socket = asio::ip::tcp::socket : <asio.hpp>;
+local cpp error_code = std::error_code : <system_error>;
 
 local java socket = java.nio.channels.AsynchronousSocketChannel;
 local java InetSocketAddress = java.net.InetSocketAddress;
@@ -27,33 +27,30 @@ local java Throwable = java.lang.Throwable;
 local java IOException = java.io.IOException;
 
 
-//
+// 自行处理异步回调的插件
 async java aio_service
 {
-  void connect(InetSocketAddress isaddr, AbstractAioSession aas) 
-    throws 
-      IOException 
+  void connect(InetSocketAddress isaddr) throws IOException 
+    attaches(AbstractAioSession aas) 
     messages 
-      OPEN(AbstractAioSession aas), 
-      CONN_ERR(Throwable exc, AbstractAioSession aas);
+      OPEN(), 
+      CONN_ERR(Throwable exc);
 
-  void connect(ConnectOptions opt, AbstractAioSession aas) 
-    throws 
-      IOException 
+  void connect(ConnectOptions opt) throws IOException 
+    attaches(AbstractAioSession aas) 
     messages 
-      OPEN(AbstractAioSession aas), 
-      CONN_ERR(Throwable exc, AbstractAioSession aas);
+      OPEN(), 
+      CONN_ERR(Throwable exc);
 }
 
-//
+// 自行处理异步回调的插件
 async net_service
 {
-  java void connect(InetSocketAddress isaddr, AbstractAioSession aas) 
-    throws 
-      IOException 
+  java void connect(InetSocketAddress isaddr) throws IOException 
+    attaches(AbstractAioSession aas) 
     messages 
-      OPEN(AbstractAioSession aas), 
-      CONN_ERR(Throwable exc, AbstractAioSession aas);
+      OPEN(), 
+      CONN_ERR(Throwable exc);
 
   cpp void connect(string host, string port) noexcept 
     messages
@@ -61,12 +58,13 @@ async net_service
       CONN_ERR(error_code ec);
 }
 
-// 使用背景fiber的插件
-fib echo_service
+// 使用各自语言最优并行方式（cpp是fiber，java是thread）的插件
+concur echo_service
   filters
     EXCEPT(string what)
 {
-  void echo(string e)  
+  void echo(string e) 
+    attaches(string note) 
     messages
       ECHO(string e), 
       ECHO_ERR(int32 errcode, string errmsg);
