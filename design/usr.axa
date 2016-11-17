@@ -64,7 +64,7 @@ concur echo_service
     EXCEPT(string what)
 {
   void echo(string e) 
-    attaches(string note) 
+    attaches(actor_id caller) 
     messages
       ECHO(string e), 
       ECHO_ERR(int32 errcode, string errmsg);
