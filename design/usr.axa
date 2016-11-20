@@ -9,6 +9,9 @@
 // actorx插件 ActorX Addon，简称axa;
 // 
 
+// 名字空间，最少也要有一级；axt和axa均使用类似cpp的文件形式去编译，文件名字和数据结构无关系；
+namespace = usr;
+
 //
 global cpp actor_id = actorx::adl::actor_id <actorx/actor/actor_id.adl.h>;
 global java actor_id = actorx.adl.ActorId;
@@ -16,8 +19,8 @@ global cpp actor_exit = actorx::adl::actor_exit <actorx/actor/actor_exit.adl.h>;
 global java actor_exit = actorx.adl.ActorExit;
 
 //
-local cpp socket = asio::ip::tcp::socket : <asio.hpp>;
-local cpp error_code = std::error_code : <system_error>;
+local cpp socket = asio::ip::tcp::socket <asio.hpp>;
+local cpp error_code = std::error_code <system_error>;
 
 local java socket = java.nio.channels.AsynchronousSocketChannel;
 local java InetSocketAddress = java.net.InetSocketAddress;
